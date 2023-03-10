@@ -5,11 +5,11 @@ import back from '../assets/log-out.png'
 import CustomButton from './Button'
 import { useRoute } from '@react-navigation/native'
 
-const Navbar = ({ timer = false, roomId = false }) => {
+const Navbar = ({ handlePress, timer = false, roomId = false }) => {
   return (
     <View style={styles.container}>
-      <CustomButton imgUrl={back} />
-      <Text>{timer}</Text>
+      <CustomButton imgUrl={back} handlePress={handlePress} />
+      {timer && <Text>Timer: {timer}</Text>}
       {roomId && <Text>Room: {roomId}</Text>}
     </View>
   )
@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16
   }
 })

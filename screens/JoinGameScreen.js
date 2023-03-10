@@ -29,7 +29,7 @@ const JoinGameScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.constainer}>
       <View style={styles.nav}>
-        <CustomButton imgUrl={back} />
+        <CustomButton imgUrl={back} handlePress={() => navigation.goBack()} />
       </View>
       <View style={styles.main}>
         <View>

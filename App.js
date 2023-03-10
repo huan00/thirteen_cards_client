@@ -18,11 +18,7 @@ export default function App() {
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="JoinGame" component={JoinGameScreen} />
-        <Stack.Screen
-          name="GameScreen"
-          component={GameScreen}
-          path="game/:id"
-        />
+        <Stack.Screen name="GameScreen" component={GameScreen} />
         <Stack.Screen name="PlayScreen" component={PlayScreen} />
       </Stack.Navigator>
     </NavigationContainer>

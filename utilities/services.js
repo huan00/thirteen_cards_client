@@ -26,8 +26,8 @@ export const getNumPlayer = (roomId) => {
   socket.emit('getNumPlayer', roomId)
 }
 
-export const getHand = () => {
-  socket.emit('getHand', id)
+export const getHand = (roomId) => {
+  socket.emit('getHand', roomId)
 }
 
 socket.on('roomId', (id) => {

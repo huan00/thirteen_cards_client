@@ -11,7 +11,7 @@ import io from 'socket.io-client'
 import { baseUrl, socketConnect, socketDisconnect } from '../utilities/services'
 import { background } from '../constants/theme'
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation: { navigate } }) => {
   // const socket = io(baseUrl)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
   }, [])
 
   const handleStartGame = () => {
-    navigation.navigate('JoinGame')
+    navigate('JoinGame')
   }
 
   return (

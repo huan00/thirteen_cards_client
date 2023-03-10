@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 
-const CustomButton = ({ imgUrl, handlePress, ...props }) => {
+const CustomButton = ({ imgUrl, handlePress }) => {
   return (
     <TouchableOpacity onPress={handlePress} style={styles.buttonStyle}>
       <Image

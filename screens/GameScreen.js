@@ -10,30 +10,26 @@ import {
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React from 'react'
-import io from 'socket.io-client'
 import Navbar from '../components/Navbar'
-import cardback from '../assets/Back_Blue.png'
+import cardback from '../assets/back.png'
 import Avatar from '../components/Avatar'
 import { background } from '../constants/theme'
-
-const socket = io('http://localhost:3001')
+import { getHand } from '../utilities/services'
 
 const GameScreen = ({ navigation }) => {
   const route = useRoute()
   const { id, player } = route.params
   console.log(route.params)
 
-  const handlePress = () => {
-    navigation.navigate('PlayScreen', { id: id, player: player })
+  const handleStartGame = () => {
+    getHand(id)
+    navigation.navigate('PlayScreen', { roomId: id, player: player })
   }
 
-  socket.on(player, (msg) => {
-    console.log(msg)
-  })
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1 }}>
-        <Navbar roomId={id} />
+      <View style={styles.wrapper}>
+        <Navbar roomId={id} handlePress={() => navigation.goBack()} />
         <View style={styles.cardContainer}>
           <Image
             style={styles.cardImage}
@@ -42,9 +38,9 @@ const GameScreen = ({ navigation }) => {
           />
         </View>
         <View>
-          <Button title="Start" onPress={handlePress} />
+          <Button title="Start" onPress={handleStartGame} />
+          <Avatar />
         </View>
-        <Avatar />
       </View>
     </SafeAreaView>
   )
@@ -58,8 +54,11 @@ const styles = StyleSheet.create({
     backgroundColor: background,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
+  wrapper: { flex: 1, display: 'flex', justifyContent: 'space-between' },
   cardContainer: {
-    margin: (0, 'auto'),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 10
   },
   cardImage: {
