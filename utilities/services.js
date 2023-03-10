@@ -1,0 +1,43 @@
+export const baseUrl = 'http://localhost:3001'
+import io from 'socket.io-client'
+
+export const socket = io(baseUrl)
+
+export const socketConnect = () => {
+  socket.on('connection', (msg) => {
+    console.log('connected')
+  })
+}
+
+export const socketDisconnect = () => {
+  socket.disconnect()
+}
+
+export const handleJoinGame = () => {
+  socket.emit('joinGame', roomId)
+}
+
+export const createGame = () => {
+  socket.emit('room', { game: 'gameId' })
+}
+
+export const getNumPlayer = (roomId) => {
+  socket.emit('getNumPlayer', roomId)
+}
+
+export const getHand = () => {
+  socket.emit('getHand', id)
+}
+
+socket.on('roomId', (id) => {
+  setRoomId(id)
+})
+
+socket.on('connectToRoom', (msg) => {
+  console.log(msg)
+})
+
+socket.on('hand', (msg) => {
+  setClientId(msg)
+  console.log(clientId)
+})

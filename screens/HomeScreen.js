@@ -8,45 +8,30 @@ import {
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import io from 'socket.io-client'
+import { baseUrl, socketConnect, socketDisconnect } from '../utilities/services'
 
-const HomeScreen = () => {
-  const [roomId, setRoomId] = useState('')
-  const socket = io('http://localhost:3001')
+const HomeScreen = ({ navigation }) => {
+  const socket = io(baseUrl)
 
   useEffect(() => {
-    socket.on('connection', () => {
-      console.log('connected')
-    })
+    socketConnect()
 
     return () => {
-      socket.disconnect()
+      socketDisconnect()
     }
   }, [])
 
-  const handlePress = () => {}
-  const createGame = () => {
-    console.log('click')
-    socket.emit('room', { game: 'gameId' })
+  const handleStartGame = () => {
+    navigation.navigate('JoinGame')
   }
 
-  socket.on('roomId', (id) => {
-    console.log(id)
-  })
   return (
     <SafeAreaView>
-      <Text>Welcome to the Game</Text>
-      <View>
-        <TextInput
-          style={styles.input}
-          placeholder="Room Id"
-          onChangeText={setRoomId}
-          value={roomId}
-        />
-        <Button title="Join" onPress={handlePress} />
-      </View>
-      <View>
-        <Text>Create a New Game</Text>
-        <Button title="Create Game" onPress={createGame} />
+      <View style={styles.container}>
+        <Text style={styles.welcomeText}>Welcome to the Game</Text>
+        <Text style={styles.startButton} onPress={handleStartGame}>
+          Start game
+        </Text>
       </View>
     </SafeAreaView>
   )
@@ -55,11 +40,22 @@ const HomeScreen = () => {
 export default HomeScreen
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    width: '90%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10
+  container: {
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  welcomeText: {
+    fontSize: '2rem'
+  },
+  startButton: {
+    width: '80%',
+    textAlign: 'center',
+    fontSize: '2rem',
+    borderRadius: 50,
+    color: 'white',
+    backgroundColor: 'black',
+    padding: (10, 15)
   }
 })

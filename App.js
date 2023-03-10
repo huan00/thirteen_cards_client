@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import HomeScreen from './screens/HomeScreen'
 import JoinGameScreen from './screens/JoinGameScreen'
+import GameScreen from './screens/GameScreen'
+import PlayScreen from './screens/PlayScreen'
 
 const Stack = createStackNavigator()
 
@@ -13,10 +15,16 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName="Home"
+        initialRouteName="JoinGame"
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="JoinGame" component={JoinGameScreen} />
+        <Stack.Screen
+          name="GameScreen"
+          component={GameScreen}
+          path="game/:id"
+        />
+        <Stack.Screen name="PlayScreen" component={PlayScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
