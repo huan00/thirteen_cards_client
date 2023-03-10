@@ -9,9 +9,10 @@ import {
 import React, { useEffect, useState } from 'react'
 import io from 'socket.io-client'
 import { baseUrl, socketConnect, socketDisconnect } from '../utilities/services'
+import { background } from '../constants/theme'
 
 const HomeScreen = ({ navigation }) => {
-  const socket = io(baseUrl)
+  // const socket = io(baseUrl)
 
   useEffect(() => {
     socketConnect()
@@ -26,7 +27,7 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <Text style={styles.welcomeText}>Welcome to the Game</Text>
         <Text style={styles.startButton} onPress={handleStartGame}>
@@ -41,18 +42,19 @@ export default HomeScreen
 
 const styles = StyleSheet.create({
   container: {
-    height: '100vh',
+    flex: 1,
     display: 'flex',
     justifyContent: 'space-around',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: background
   },
   welcomeText: {
-    fontSize: '2rem'
+    fontSize: 16
   },
   startButton: {
     width: '80%',
     textAlign: 'center',
-    fontSize: '2rem',
+    fontSize: 16,
     borderRadius: 50,
     color: 'white',
     backgroundColor: 'black',

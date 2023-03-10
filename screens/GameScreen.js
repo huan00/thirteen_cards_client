@@ -1,10 +1,20 @@
-import { View, Text, Button, Image, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  Button,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+  StatusBar
+} from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React from 'react'
 import io from 'socket.io-client'
 import Navbar from '../components/Navbar'
 import cardback from '../assets/Back_Blue.png'
 import Avatar from '../components/Avatar'
+import { background } from '../constants/theme'
 
 const socket = io('http://localhost:3001')
 
@@ -21,16 +31,22 @@ const GameScreen = ({ navigation }) => {
     console.log(msg)
   })
   return (
-    <View style={styles.container}>
-      <Navbar roomId={id} />
-      <View style={styles.cardContainer}>
-        <Image style={styles.cardImage} source={cardback} resizeMode="fill" />
+    <SafeAreaView style={styles.container}>
+      <View style={{ flex: 1 }}>
+        <Navbar roomId={id} />
+        <View style={styles.cardContainer}>
+          <Image
+            style={styles.cardImage}
+            source={cardback}
+            resizeMode="cover"
+          />
+        </View>
+        <View>
+          <Button title="Start" onPress={handlePress} />
+        </View>
+        <Avatar />
       </View>
-      <View>
-        <Button title="Start" onPress={handlePress} />
-      </View>
-      <Avatar />
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -38,8 +54,9 @@ export default GameScreen
 
 const styles = StyleSheet.create({
   container: {
-    height: '100vh',
-    backgroundColor: 'green'
+    flex: 1,
+    backgroundColor: background,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   cardContainer: {
     margin: (0, 'auto'),

@@ -1,9 +1,19 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  Platform
+} from 'react-native'
 import { useState } from 'react'
 import { handleJoinGame, createGame, getNumPlayer } from '../utilities/services'
 import CustomButton from '../components/Button'
 import back from '../assets/log-out.png'
 import { socket } from '../utilities/services'
+import { background } from '../constants/theme'
 
 const JoinGameScreen = ({ navigation }) => {
   const [roomId, setRoomId] = useState('')
@@ -17,7 +27,7 @@ const JoinGameScreen = ({ navigation }) => {
   })
 
   return (
-    <View style={styles.constainer}>
+    <SafeAreaView style={styles.constainer}>
       <View style={styles.nav}>
         <CustomButton imgUrl={back} />
       </View>
@@ -36,10 +46,10 @@ const JoinGameScreen = ({ navigation }) => {
             onChangeText={setRoomId}
             value={roomId}
           />
-          <Button title="Join" onPress={handleJoinGame} />
+          <Button title="Join" onPress={() => handleJoinGame(roomId)} />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
@@ -47,11 +57,11 @@ export default JoinGameScreen
 
 const styles = StyleSheet.create({
   constainer: {
-    height: '100vh',
-    width: '100vw',
+    flex: 1,
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: 'green'
+    backgroundColor: background,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
   nav: {
     width: '100%',
@@ -68,7 +78,7 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '100%',
-    outlineStyle: 'none',
+    // outlineStyle: 'none',
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 5,

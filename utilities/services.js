@@ -1,4 +1,5 @@
-export const baseUrl = 'http://localhost:3001'
+export const baseUrl = 'http://192.168.4.27:3001'
+// export const baseUrl = 'http://localhost:3001'
 import io from 'socket.io-client'
 
 export const socket = io(baseUrl)
@@ -13,12 +14,12 @@ export const socketDisconnect = () => {
   socket.disconnect()
 }
 
-export const handleJoinGame = () => {
+export const handleJoinGame = (roomId) => {
   socket.emit('joinGame', roomId)
 }
 
 export const createGame = () => {
-  socket.emit('room', { game: 'gameId' })
+  socket.emit('newGame', { game: 'gameId' })
 }
 
 export const getNumPlayer = (roomId) => {
