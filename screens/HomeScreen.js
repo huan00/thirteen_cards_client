@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react'
 import io from 'socket.io-client'
 import { baseUrl, socketConnect, socketDisconnect } from '../utilities/services'
 import { background } from '../constants/theme'
+import { deck } from '../constants/deck'
 
 const HomeScreen = ({ navigation: { navigate } }) => {
   // const socket = io(baseUrl)
