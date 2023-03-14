@@ -4,7 +4,8 @@ import {
   SafeAreaView,
   StyleSheet,
   Image,
-  Dimensions
+  Dimensions,
+  Button
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -23,11 +24,11 @@ const PlayScreen = ({ navigation }) => {
   const route = useRoute()
   const { roomId, player } = route.params
   const [playerHand, setPlayerHand] = useState(null)
-  const [setHand, setSetHand] = useState([])
+  // const [setHand, setSetHand] = useState([])
   const [topSet, setTopSet] = useState(['', '', ''])
   const [midSet, setMidSet] = useState(['', '', '', '', ''])
   const [bottomSet, setBottomSet] = useState(['', '', '', '', ''])
-  const [draggable, setDraggable] = useState(true)
+  const [error, setError] = useState('')
 
   const handleBack = () => {
     navigation.goBack()
@@ -36,6 +37,24 @@ const PlayScreen = ({ navigation }) => {
   socket.on(player, (hand) => {
     setPlayerHand(hand)
   })
+
+  const handleSubmit = () => {
+    if (!checkComplete()) {
+      setTimeout(() => {
+        setError('')
+      }, 2000)
+    } else {
+      const completeSet = [[...topSet], [...midSet], [...bottomSet]]
+      socket.emit('submitHand', completeSet)
+    }
+  }
+
+  const checkComplete = () => {
+    if (topSet.includes('') || midSet.includes('') || bottomSet.includes('')) {
+      return false
+    }
+    return true
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,8 +127,11 @@ const PlayScreen = ({ navigation }) => {
           </View>
         </DraxProvider>
 
-        <View style={styles.playerHand}>
-          <View></View>
+        <View style={styles.playerInfo}>
+          <View>
+            <Button title="Submit" onPress={handleSubmit} />
+            <Text>{error}</Text>
+          </View>
           <Avatar />
         </View>
       </View>
@@ -158,5 +180,8 @@ const styles = StyleSheet.create({
   startingHand: {},
   dragging: {
     opacity: 0
+  },
+  playerInfo: {
+    marginTop: 50
   }
 })
