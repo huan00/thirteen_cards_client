@@ -4,7 +4,9 @@ import {
   SafeAreaView,
   StyleSheet,
   Image,
-  Dimensions
+  Dimensions,
+  TouchableOpacity,
+  FlatList
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -15,11 +17,20 @@ import horizontalCover from '../assets/horizontalCover.png'
 import verticalLeft from '../assets/verticalLeft.png'
 import verticalRight from '../assets/verticalRight.png'
 import Avatar from '../components/Avatar'
+import { DraxProvider, DraxView, DraxList } from 'react-native-drax'
+import Card from '../components/Card'
+import { event } from 'react-native-reanimated'
+import CardSlot from '../components/CardSlot'
 
 const PlayScreen = ({ navigation }) => {
-  const [playerHand, setPlayerHand] = useState(null)
   const route = useRoute()
   const { roomId, player } = route.params
+  const [playerHand, setPlayerHand] = useState(null)
+  const [setHand, setSetHand] = useState([])
+  const [topSet, setTopSet] = useState(['', '', ''])
+  const [midSet, setMidSet] = useState(['', '', '', '', ''])
+  const [bottomSet, setBottomSet] = useState(['', '', '', '', ''])
+  const [draggable, setDraggable] = useState(true)
 
   const handleBack = () => {
     navigation.goBack()
@@ -27,8 +38,14 @@ const PlayScreen = ({ navigation }) => {
 
   socket.on(player, (hand) => {
     setPlayerHand(hand)
-    console.log(hand)
   })
+
+  const handleDragDrop = (index, data, setData) => {
+    const newData = [...data]
+    newData.splice(index, 1)
+    setData(newData)
+  }
+  // console.log(topSet)
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
@@ -41,27 +58,60 @@ const PlayScreen = ({ navigation }) => {
             <Text>Ad</Text>
           </View>
         </View>
-        <View style={styles.cardPlacement}>
-          <View style={styles.cardPlacementRow}>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
+
+        {/* Player card logic  */}
+        <DraxProvider>
+          <CardSlot
+            playHand={playerHand}
+            setPlayHand={setPlayerHand}
+            setCard={setTopSet}
+            cards={topSet}
+          />
+          <CardSlot
+            playHand={playerHand}
+            setPlayHand={setPlayerHand}
+            setCard={setMidSet}
+            cards={midSet}
+          />
+          <CardSlot
+            playHand={playerHand}
+            setPlayHand={setPlayerHand}
+            setCard={setBottomSet}
+            cards={bottomSet}
+          />
+          {/* LIST OF CARDS */}
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            {playerHand && (
+              <DraxList
+                style={{}}
+                numColumns={13}
+                longPressDelay={0}
+                scrollEnabled={false}
+                data={playerHand}
+                keyExtractor={(item) => item}
+                onItemReorder={({ fromIndex, toIndex }) => {
+                  const newData = playerHand.slice()
+                  newData.splice(toIndex, 0, newData.splice(fromIndex, 1)[0])
+                  setPlayerHand(newData)
+                }}
+                renderItemContent={({ item, index }) => (
+                  <DraxView
+                    style={index === 0 ? '' : { marginLeft: -20 }}
+                    payload={{ suit: item.suit, rank: item.rank }}
+                    onDragDrop={(event) => {
+                      const newData = playerHand.slice()
+                      newData.splice(index, 1)
+                      setPlayerHand(newData)
+                    }}
+                  >
+                    <Card suit={item.suit} rank={item.rank} />
+                  </DraxView>
+                )}
+              />
+            )}
           </View>
-          <View style={styles.cardPlacementRow}>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-          </View>
-          <View style={styles.cardPlacementRow}>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-            <View style={styles.singleCard}></View>
-          </View>
-        </View>
+        </DraxProvider>
+
         <View style={styles.playerHand}>
           <View></View>
           <Avatar />
@@ -108,23 +158,6 @@ const styles = StyleSheet.create({
     top: 100,
     transform: [{ translateX: -Dimensions.get('window').width / 4 }]
   },
-  cardPlacement: {
-    flex: 1
-  },
-  cardPlacementRow: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center'
-  },
-  singleCard: {
-    width: 60,
-    height: 90,
-    backgroundColor: 'rgba(0,0,0, .2)',
-    marginHorizontal: 5
-  },
-  playerHand: {
-    flex: 0.4,
-    backgroundColor: 'rgba(255,0,0, .5)'
-  }
+
+  startingHand: {}
 })
