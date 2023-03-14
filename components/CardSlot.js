@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native'
 import { DraxView } from 'react-native-drax'
 import Card from './Card'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
   const onReceiveDrop = (
@@ -16,17 +16,21 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
     if (cards[index] === '') {
       let newData = cards.slice()
       newData[index] = event.dragged.payload
-      setCard(newData)
+
+      const temp = checkDupCard(newData, payload, index)
+
+      setCard(temp)
     } else {
       const indexCard = cards[index]
       const newData = cards.slice()
       newData.splice(index, 1, payload)
-      setCard(newData)
+      const temp = checkDupCard(newData, payload, index)
+      setCard(temp)
 
       let playSet = playHand.slice()
 
       playSet = playSet.filter((card) => {
-        if (card.suit !== payload.suit || card.rank !== payload.rank)
+        if (card['suit'] !== payload['suit'] || card.rank !== payload.rank)
           return card
       })
       playSet.push(indexCard)
@@ -34,12 +38,28 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
       setPlayHand(playSet)
     }
   }
+  // console.log(cards)
 
   const onDrop = (index) => {
     const tempCard = cards.slice()
     tempCard[index] = ''
     setCard(tempCard)
+    // console.log(cards)
   }
+
+  const checkDupCard = (cards, payload, index) => {
+    const temp = cards.map((card, idx) => {
+      if (
+        card.suit === payload.suit &&
+        card.rank === payload.rank &&
+        idx !== index
+      ) {
+        return ''
+      } else return card
+    })
+    return temp
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topSetContainer}>
@@ -48,7 +68,6 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
             <DraxView
               draggable
               onReceiveDragDrop={(event) => {
-                console.log(event)
                 onReceiveDrop(
                   event,
                   playHand,
