@@ -38,13 +38,10 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
       setPlayHand(playSet)
     }
   }
-  // console.log(cards)
-
   const onDrop = (index) => {
     const tempCard = cards.slice()
     tempCard[index] = ''
     setCard(tempCard)
-    // console.log(cards)
   }
 
   const checkDupCard = (cards, payload, index) => {
@@ -66,6 +63,8 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
         {cards.map((_, index) => (
           <View style={styles.singleCard} key={index}>
             <DraxView
+              style={styles.transition}
+              draggingStyle={styles.draggingStyle}
               draggable
               onReceiveDragDrop={(event) => {
                 onReceiveDrop(
@@ -86,8 +85,6 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
               }}
               payload={cards[index]}
               onDragDrop={() => onDrop(index)}
-              draggingStyle={styles.draggingStyle}
-              dragReleasedStyle={styles.draggingStyle}
             />
           </View>
         ))}
@@ -121,6 +118,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   draggingStyle: {
-    opacity: 0.2
+    opacity: 0
   }
 })

@@ -96,6 +96,8 @@ const PlayScreen = ({ navigation }) => {
                 }}
                 renderItemContent={({ item, index }) => (
                   <DraxView
+                    draggingStyle={styles.dragging}
+                    dragInactiveStyle={{}}
                     style={index === 0 ? '' : { marginLeft: -20 }}
                     payload={{ suit: item.suit, rank: item.rank }}
                     onDragDrop={(event) => {
@@ -159,5 +161,8 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -Dimensions.get('window').width / 4 }]
   },
 
-  startingHand: {}
+  startingHand: {},
+  dragging: {
+    opacity: 0
+  }
 })
