@@ -4,9 +4,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Image,
-  Dimensions,
-  TouchableOpacity,
-  FlatList
+  Dimensions
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -19,7 +17,6 @@ import verticalRight from '../assets/verticalRight.png'
 import Avatar from '../components/Avatar'
 import { DraxProvider, DraxView, DraxList } from 'react-native-drax'
 import Card from '../components/Card'
-import { event } from 'react-native-reanimated'
 import CardSlot from '../components/CardSlot'
 
 const PlayScreen = ({ navigation }) => {
@@ -40,12 +37,6 @@ const PlayScreen = ({ navigation }) => {
     setPlayerHand(hand)
   })
 
-  const handleDragDrop = (index, data, setData) => {
-    const newData = [...data]
-    newData.splice(index, 1)
-    setData(newData)
-  }
-  // console.log(topSet)
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
@@ -99,7 +90,10 @@ const PlayScreen = ({ navigation }) => {
                     draggingStyle={styles.dragging}
                     dragInactiveStyle={{}}
                     style={index === 0 ? '' : { marginLeft: -20 }}
-                    payload={{ suit: item.suit, rank: item.rank }}
+                    payload={[
+                      { suit: item.suit, rank: item.rank },
+                      { setCard: setPlayerHand, cards: playerHand, index }
+                    ]}
                     onDragDrop={(event) => {
                       const newData = playerHand.slice()
                       newData.splice(index, 1)
