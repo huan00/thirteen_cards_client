@@ -5,8 +5,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
-  TouchableOpacity,
-  FlatList
+  Button
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import React, { useState } from 'react'
@@ -19,18 +18,17 @@ import verticalRight from '../assets/verticalRight.png'
 import Avatar from '../components/Avatar'
 import { DraxProvider, DraxView, DraxList } from 'react-native-drax'
 import Card from '../components/Card'
-import { event } from 'react-native-reanimated'
 import CardSlot from '../components/CardSlot'
 
 const PlayScreen = ({ navigation }) => {
   const route = useRoute()
   const { roomId, player } = route.params
   const [playerHand, setPlayerHand] = useState(null)
-  const [setHand, setSetHand] = useState([])
+  // const [setHand, setSetHand] = useState([])
   const [topSet, setTopSet] = useState(['', '', ''])
   const [midSet, setMidSet] = useState(['', '', '', '', ''])
   const [bottomSet, setBottomSet] = useState(['', '', '', '', ''])
-  const [draggable, setDraggable] = useState(true)
+  const [error, setError] = useState('')
 
   const handleBack = () => {
     navigation.goBack()
@@ -40,12 +38,26 @@ const PlayScreen = ({ navigation }) => {
     setPlayerHand(hand)
   })
 
-  const handleDragDrop = (index, data, setData) => {
-    const newData = [...data]
-    newData.splice(index, 1)
-    setData(newData)
+  const handleSubmit = () => {
+    if (!checkComplete()) {
+      setError('sets are not complete')
+
+      setTimeout(() => {
+        setError('')
+      }, 2000)
+    } else {
+      const completeSet = [[...topSet], [...midSet], [...bottomSet]]
+      socket.emit('submitHand', completeSet)
+    }
   }
-  // console.log(topSet)
+
+  const checkComplete = () => {
+    if (topSet.includes('') || midSet.includes('') || bottomSet.includes('')) {
+      return false
+    }
+    return true
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
@@ -96,8 +108,13 @@ const PlayScreen = ({ navigation }) => {
                 }}
                 renderItemContent={({ item, index }) => (
                   <DraxView
+                    draggingStyle={styles.dragging}
+                    dragInactiveStyle={{}}
                     style={index === 0 ? '' : { marginLeft: -20 }}
-                    payload={{ suit: item.suit, rank: item.rank }}
+                    payload={[
+                      { suit: item.suit, rank: item.rank },
+                      { setCard: setPlayerHand, cards: playerHand, index }
+                    ]}
                     onDragDrop={(event) => {
                       const newData = playerHand.slice()
                       newData.splice(index, 1)
@@ -112,8 +129,11 @@ const PlayScreen = ({ navigation }) => {
           </View>
         </DraxProvider>
 
-        <View style={styles.playerHand}>
-          <View></View>
+        <View style={styles.playerInfo}>
+          <View>
+            <Button title="Submit" onPress={handleSubmit} />
+            <Text>{error}</Text>
+          </View>
           <Avatar />
         </View>
       </View>
@@ -159,5 +179,11 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -Dimensions.get('window').width / 4 }]
   },
 
-  startingHand: {}
+  startingHand: {},
+  dragging: {
+    opacity: 0
+  },
+  playerInfo: {
+    marginTop: 50
+  }
 })

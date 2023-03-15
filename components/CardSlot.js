@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { DraxView } from 'react-native-drax'
 import Card from './Card'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
   const onReceiveDrop = (
@@ -12,39 +12,22 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
     cards,
     index
   ) => {
-    const payload = event.dragged.payload
+    const payload = event.dragged.payload[0]
     if (cards[index] === '') {
       let newData = cards.slice()
-      newData[index] = event.dragged.payload
+      newData[index] = event.dragged.payload[0]
 
       const temp = checkDupCard(newData, payload, index)
 
       setCard(temp)
-    } else {
-      const indexCard = cards[index]
-      const newData = cards.slice()
-      newData.splice(index, 1, payload)
-      const temp = checkDupCard(newData, payload, index)
-      setCard(temp)
-
-      let playSet = playHand.slice()
-
-      playSet = playSet.filter((card) => {
-        if (card['suit'] !== payload['suit'] || card.rank !== payload.rank)
-          return card
-      })
-      playSet.push(indexCard)
-
-      setPlayHand(playSet)
+    } else if (cards[index] !== '') {
+      swapCard(event, setCard, cards, index)
     }
   }
-  // console.log(cards)
-
   const onDrop = (index) => {
     const tempCard = cards.slice()
     tempCard[index] = ''
     setCard(tempCard)
-    // console.log(cards)
   }
 
   const checkDupCard = (cards, payload, index) => {
@@ -60,12 +43,46 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
     return temp
   }
 
+  const swapCard = (event, setCards, cards, index) => {
+    const payload = event.dragged.payload[0]
+    const fromSet = event.dragged.payload[1]
+    const fromCards = fromSet['cards'].slice()
+    const replaceCard = cards[index]
+
+    //receiving set handled
+    const receiveSet = cards.slice()
+    receiveSet.splice(index, 1, payload)
+    const temp = checkDupCard(receiveSet, payload, index)
+    setCards(temp)
+    //swap on same row
+    if (checkSameRowSwap(fromCards, replaceCard)) {
+      receiveSet.splice(fromSet.index, 1, replaceCard)
+      setCards(receiveSet)
+    } else {
+      //swap from playHand
+      fromCards.splice(fromSet.index, 1, replaceCard)
+      fromSet.setCard(fromCards)
+    }
+  }
+
+  const checkSameRowSwap = (set, replaceCard) => {
+    for (let i = 0; i < set.length; i++) {
+      const card = set[i]
+      if (card.suit === replaceCard.suit && card.rank === replaceCard.rank) {
+        return true
+      }
+    }
+    return false
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.topSetContainer}>
         {cards.map((_, index) => (
           <View style={styles.singleCard} key={index}>
             <DraxView
+              style={styles.transition}
+              draggingStyle={styles.draggingStyle}
               draggable
               onReceiveDragDrop={(event) => {
                 onReceiveDrop(
@@ -84,10 +101,8 @@ const CardSlot = ({ playHand, setPlayHand, setCard, cards }) => {
                   </>
                 )
               }}
-              payload={cards[index]}
+              payload={[{ ...cards[index] }, { setCard, cards, index }]}
               onDragDrop={() => onDrop(index)}
-              draggingStyle={styles.draggingStyle}
-              dragReleasedStyle={styles.draggingStyle}
             />
           </View>
         ))}
@@ -121,6 +136,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   draggingStyle: {
-    opacity: 0.2
+    opacity: 0
   }
 })

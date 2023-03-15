@@ -1,9 +1,8 @@
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react'
 import { deck } from '../constants/deck'
 
 const Card = ({ rank, suit, index }) => {
-  const [zIndex, setZIndex] = useState(0)
   const cardImage = (rank, suit) => {
     let temp = ''
     deck.forEach((el) => {
