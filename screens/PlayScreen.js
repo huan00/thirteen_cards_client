@@ -40,6 +40,8 @@ const PlayScreen = ({ navigation }) => {
 
   const handleSubmit = () => {
     if (!checkComplete()) {
+      setError('sets are not complete')
+
       setTimeout(() => {
         setError('')
       }, 2000)
